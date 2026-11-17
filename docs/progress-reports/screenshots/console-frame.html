@@ -1,0 +1,87 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Backend console output</title>
+<style>
+  body { margin:0; background:#12121a; font-family:"Cascadia Mono","Consolas","Courier New",monospace; }
+  .win { margin:0; }
+  .bar { background:#23232e; color:#d8d8e0; font-size:13px; font-family:"Segoe UI",Arial,sans-serif;
+         padding:7px 14px; display:flex; align-items:center; gap:9px; }
+  .dot { width:11px; height:11px; border-radius:50%; display:inline-block; }
+  pre { margin:0; padding:14px 18px 20px; color:#e6e6ea; font-size:13px; line-height:1.32;
+        white-space:pre; }
+  .prompt { color:#7ddc8a; }
+  .path { color:#6fb4f0; }
+</style></head>
+<body><div class="win">
+<div class="bar"><span class="dot" style="background:#ff5f57"></span>
+<span class="dot" style="background:#febc2e"></span>
+<span class="dot" style="background:#28c840"></span>
+<span style="margin-left:8px">Windows PowerShell &nbsp;&mdash;&nbsp; node tools/demo.js</span></div>
+<pre><span class="prompt">PS</span> <span class="path">D:\projects\Operating_Systems_Finals&gt;</span> node tools/demo.js
+==============================================================================
+CPU SCHEDULING SIMULATOR - BACKEND CORE TEST
+CS 3104N Operating Systems | Group 12 | Veloso &amp; Martinez
+==============================================================================
+
+ALGORITHM: Priority Scheduling (Non-preemptive)
+
+INPUT PROCESSES (hard-coded)
+  PID   Arrival   Burst   Priority
+  ----------------------------------
+  P1          0       5          2
+  P2          1       3          1
+  P3          2       4          3
+  P4          3       2          3
+  P5         16       3          2
+
+  Rule: a LOWER priority number is a HIGHER priority.
+  Tie on priority: the earlier arrival runs first, then the lower PID.
+
+==============================================================================
+GANTT CHART (execution timeline)
+
+  +---------------+---------+------------+------+------+---------+
+  |      P1       |   P2    |     P3     |  P4  | IDLE |   P5    |
+  +---------------+---------+------------+------+------+---------+
+  0               5         8           12     14     16        19
+
+PER-PROCESS RESULTS
+  PID   Arrival   Burst   Priority   Completion    TAT     WT
+  --------------------------------------------------------------
+  P1          0       5          2            5      5      0
+  P2          1       3          1            8      7      4
+  P3          2       4          3           12     10      6
+  P4          3       2          3           14     11      9
+  P5         16       3          2           19      3      0
+  --------------------------------------------------------------
+  Formulas:  TAT = Completion - Arrival      WT = TAT - Burst
+
+SYSTEM AVERAGES
+  Average Turnaround Time : 7.20
+  Average Waiting Time    : 3.80
+  CPU Utilization         : 89.47%  (17 busy of 19 total time units)
+
+HAND-CALCULATION CHECK
+  P1 completion: by hand   5  |  by code   5   [MATCH]
+  P2 completion: by hand   8  |  by code   8   [MATCH]
+  P3 completion: by hand  12  |  by code  12   [MATCH]
+  P4 completion: by hand  14  |  by code  14   [MATCH]
+  P5 completion: by hand  19  |  by code  19   [MATCH]
+  Average TAT: by hand 7.20  |  by code 7.20   [MATCH]
+  Average WT : by hand 3.80  |  by code 3.80   [MATCH]
+
+  RESULT: the code agrees with the hand calculation.
+
+==============================================================================
+ROBUSTNESS CHECK: the core rejects invalid input
+==============================================================================
+  Simulation ran: false
+  ERROR  Row 1: the arrival time must be 0 or more.
+  ERROR  Row 2: the Process ID &quot;P1&quot; is a duplicate.
+  ERROR  Row 2: the burst time must be more than 0.
+  ERROR  Row 3: the priority must be 1 or more. A lower number is a higher priority.
+
+==============================================================================
+END OF BACKEND TEST
+==============================================================================
+<span class="prompt">PS</span> <span class="path">D:\projects\Operating_Systems_Finals&gt;</span> <span style="background:#e6e6ea">&nbsp;</span>
+</pre></div></body></html>

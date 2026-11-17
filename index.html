@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CPU Scheduling Simulator</title>
+<link rel="stylesheet" href="src/ui/styles.css">
+</head>
+<body>
+
+<header>
+  <h1>CPU Scheduling Simulator</h1>
+  <span>CS 3104N Operating Systems &middot; Group 12 &middot; Veloso &amp; Martinez</span>
+</header>
+
+<main>
+  <!-- Left column: the input the user controls. -->
+  <section class="column">
+
+    <div class="card">
+      <h2><span class="badge">1</span>Simulation Settings</h2>
+      <div class="row">
+        <div class="control">
+          <label for="algorithm">Algorithm</label>
+          <select id="algorithm">
+            <option value="priority-np">Priority Scheduling (Non-preemptive)</option>
+            <option value="priority-p" selected>Priority Scheduling (Preemptive)</option>
+            <option value="mlq">Multilevel Queue (Q1 = Round Robin, Q2 = FCFS)</option>
+          </select>
+        </div>
+        <div class="control">
+          <label for="quantum">Time Quantum (MLQ only)</label>
+          <input id="quantum" type="number" min="1" step="1" value="2" disabled>
+        </div>
+      </div>
+      <div class="row buttons">
+        <button id="run" class="btn primary" type="button">&#9654; Run Simulation</button>
+        <button id="reset" class="btn" type="button">Reset</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="badge">2</span>Input Table: Processes</h2>
+      <table id="input-table">
+        <thead>
+          <tr>
+            <th>PID</th><th>Arrival</th><th>Burst</th>
+            <th class="priority-col">Priority</th><th class="queue-col">Queue</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="input-body"></tbody>
+      </table>
+      <div class="row buttons">
+        <button id="add-row" class="btn" type="button">+ Add Process</button>
+        <label class="btn file-btn" for="upload">&#8686; Upload File (.csv / .txt)</label>
+        <input id="upload" type="file" accept=".csv,.txt" hidden>
+        <button id="load-sample" class="btn" type="button">Load Sample</button>
+      </div>
+      <p class="note">A lower priority number is a higher priority. The Queue column is used
+        by the Multilevel Queue only: 1 is foreground, 2 is background.</p>
+    </div>
+
+    <div id="errors" class="card errors" hidden>
+      <h2>Input Errors</h2>
+      <ul id="error-list"></ul>
+    </div>
+
+  </section>
+
+  <!-- Right column: the output the core produces. -->
+  <section class="column">
+
+    <div class="card">
+      <h2><span class="badge">3</span>Gantt Chart: Execution Timeline</h2>
+      <div id="gantt-area">
+        <p class="placeholder">Push <b>Run Simulation</b> to draw the timeline.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="badge">4</span>Performance Metrics</h2>
+      <div id="metrics-area">
+        <p class="placeholder">The results table appears here after a run.</p>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<script type="module" src="src/ui/app.js"></script>
+</body>
+</html>

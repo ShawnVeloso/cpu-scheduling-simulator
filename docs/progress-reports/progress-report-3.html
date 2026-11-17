@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Progress Report No. 3</title>
+<style>
+  body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.5; color: #000;
+         max-width: 760px; margin: 32px auto; padding: 0 16px; }
+  h1 { font-size: 16pt; margin: 0 0 12px; }
+  h2 { font-size: 13pt; margin: 18px 0 6px; }
+  ul, ol { margin: 4px 0; }
+  code { font-family: Consolas, "Courier New", monospace; font-size: 10.5pt; }
+  table { border-collapse: collapse; margin: 8px 0; font-size: 10.5pt; }
+  th, td { border: 1px solid #999; padding: 4px 8px; text-align: left; }
+  th { background: #f0f0f0; }
+  .hint { font-family: system-ui, sans-serif; font-size: 10pt; background: #fff7d6;
+          border: 1px solid #e6c34a; padding: 8px 12px; border-radius: 6px; margin-bottom: 24px; }
+</style>
+</head>
+<body>
+<div class="hint">Select all text <b>below this box</b>, from the title to the end. Push
+Ctrl+C, then push Ctrl+V in the Google Doc. Put
+<code>screenshots/pr3-gui-gantt.png</code> at the first marked position and
+<code>screenshots/pr3-gui-mlq.png</code> at the second. Then select
+File &rarr; Download &rarr; PDF.</div>
+
+<h1>Progress Report No. 3</h1>
+
+<h2>1. Group Information</h2>
+<ul>
+  <li><b>Group Number:</b> 12</li>
+  <li><b>Members:</b> Shawn Veloso, Rev Martinez</li>
+</ul>
+
+<h2>2. Preemptive Algorithms</h2>
+
+<p>Two preemptive algorithms are complete. Both algorithms share the one-time-unit loop that
+Progress Report No. 2 describes. The loop runs the CPU for one time unit, then it decides
+again.</p>
+
+<p><b>A. Priority Scheduling (Preemptive).</b> This algorithm and the non-preemptive version
+are one function. A flag selects the behaviour. The non-preemptive version decides only when
+the CPU becomes free. The preemptive version decides at every time unit. The decision has
+three steps:</p>
+<ol>
+  <li>The scheduler examines all the processes and selects the best ready candidate. A
+    process is ready when it arrived and still has burst time left. The comparison uses the
+    priority, then the arrival time, then the PID.</li>
+  <li>A process holds the CPU unless the candidate has a <b>strictly</b> higher priority. An
+    equal priority does not cause a preemption. This rule stops an unnecessary context
+    switch between two equal processes.</li>
+  <li>If the candidate wins, the scheduler records a preemption event with the time, the two
+    process IDs, and the burst time that is left. The timeline marks the block as cut.</li>
+</ol>
+
+<p>The code does not copy a register set or a stack, because this is a simulator. A context
+switch is one assignment that changes which object the variable <code>running</code> points
+to. The preempted process keeps its <code>remaining</code> field, so it continues at the
+correct point later. It keeps its original arrival time, so the tie-breaking stays correct.
+Our context-switch time is 0.</p>
+
+<p><b>How a new arrival interrupts the running process.</b> The scheduler does not use an
+interrupt or a timer. The loop advances the clock by one time unit. At each new time unit it
+reads the arrival time of every process again. A process that arrives at the current time
+unit becomes part of the ready set immediately. The selection in step 1 then compares it with
+the running process. Therefore the preemption occurs at the exact arrival time unit.</p>
+
+<p><b>B. Multilevel Queue (Q1 = Round Robin, Q2 = FCFS).</b> This algorithm has two
+preemption types:</p>
+<ul>
+  <li><b>Preemption between the queues.</b> Queue 2 runs only while queue 1 is empty. At each
+    time unit the scheduler tests queue 1 before it dispatches. If a queue 1 process waits and
+    a queue 2 process holds the CPU, the queue 2 process loses the CPU immediately. It returns
+    to the <b>front</b> of queue 2, because queue 2 is FCFS. It keeps its remaining burst
+    time.</li>
+  <li><b>Preemption by the time quantum.</b> A queue 1 process has a counter that starts at
+    the time quantum. The counter decreases by 1 at each time unit. At 0 the process returns
+    to the back of queue 1 with its remaining burst time.</li>
+</ul>
+
+<p>The order at one time unit is fixed, because it changes the result. First the new arrivals
+enter the back of their queue. Second the quantum-expired process enters the back of queue 1.
+A new arrival therefore runs before a process that lost the CPU at the same time unit.</p>
+
+<p><b>Tests.</b> The command <code>node tests/run-tests.js</code> runs 49 tests. All 49 tests
+pass. The preemptive tests cover these cases:</p>
+<ul>
+  <li>A higher-priority arrival takes the CPU, and the process continues later with the
+    correct burst time.</li>
+  <li>An equal-priority arrival does not take the CPU.</li>
+  <li>Three processes arrive at the same time unit.</li>
+  <li>A queue 1 arrival takes the CPU from a queue 2 process, and the queue 2 process resumes
+    at the front of its queue.</li>
+  <li>A new arrival enters queue 1 before a quantum-expired process.</li>
+  <li>The Gantt blocks cover every time unit one time, with no gap and no overlap.</li>
+</ul>
+
+<h2>3. GUI Integration</h2>
+
+<p>The backend and the frontend are connected. The simulator runs in a browser. The page uses
+HTML, CSS, and JavaScript with no framework.</p>
+
+<p><b>The connection.</b> The interface file <code>src/ui/app.js</code> imports one function,
+<code>runSimulation(rows, options)</code>. This is the only link between the two parts. The
+interface holds no scheduling logic, and the core has no access to the page.</p>
+
+<table>
+  <tr><th>Step</th><th>Action</th></tr>
+  <tr><td>1</td><td>The user edits the input table, or uploads a CSV or TXT file.</td></tr>
+  <tr><td>2</td><td>The user selects the algorithm and the time quantum.</td></tr>
+  <tr><td>3</td><td>The interface reads the table into plain rows and calls <code>runSimulation()</code>.</td></tr>
+  <tr><td>4</td><td>The core checks the input, runs the algorithm, and returns the blocks, the results, the averages, and the events.</td></tr>
+  <tr><td>5</td><td>The interface draws the Gantt chart and the metrics table from that answer.</td></tr>
+</table>
+
+<p><b>The input passes correctly.</b> A browser gives each table cell as text. The core
+converts the text to whole numbers and rejects any value that is not a whole number. We
+confirmed the connection in two ways. First, the browser shows the same numbers as the
+console test for the same process set. Second, the automatic tests use the same function and
+the same data sets.</p>
+
+<p><b>What the interface does now:</b></p>
+<ul>
+  <li>The user adds or removes a process row, and edits each cell.</li>
+  <li>The user uploads process data as a CSV or TXT file.</li>
+  <li>The algorithm list offers the three algorithms. The page greys out the columns that the
+    selected algorithm does not use.</li>
+  <li>The Gantt chart shows one colour for each process. It shows the IDLE time with a
+    hatched block. It shows a red marker and a red edge at each preemption point.</li>
+  <li>The time axis shows a number at every block boundary.</li>
+  <li>The metrics panel shows the completion time, the turnaround time, and the waiting time
+    of each process. It also shows the average turnaround time, the average waiting time, and
+    the CPU utilization.</li>
+  <li>An invalid entry produces a message in a red panel. The page does not stop with an
+    error.</li>
+</ul>
+
+<h2>4. Proof of Progress</h2>
+
+<p><b>Screenshot 1: Priority Scheduling (Preemptive).</b> The input is P1 (arrival 0, burst 4,
+priority 3), P2 (arrival 1, burst 3, priority 1), P3 (arrival 2, burst 2, priority 4), and P4
+(arrival 10, burst 2, priority 2).</p>
+<ul>
+  <li>P2 arrives at time 1 with the priority 1. It takes the CPU from P1. The red marker shows
+    this preemption point.</li>
+  <li>P1 continues at time 4 with the 3 time units that are left.</li>
+  <li>No process is ready between time 9 and time 10, so the chart shows an IDLE block.</li>
+  <li>The average turnaround time is 4.75. The average waiting time is 2.00. The CPU
+    utilization is 91.67 percent. We calculated the same values by hand.</li>
+</ul>
+
+<p><b>[ Insert the GUI screenshot here: screenshots/pr3-gui-gantt.png ]</b></p>
+
+<p><b>Screenshot 2: Multilevel Queue, time quantum 2.</b> The input is P1 (arrival 0, burst 4,
+queue 2), P2 (arrival 3, burst 3, queue 1), P3 (arrival 4, burst 2, queue 1), and P4 (arrival
+10, burst 3, queue 2).</p>
+<ul>
+  <li>P1 runs first, because queue 1 is empty.</li>
+  <li>P2 arrives at time 3 in queue 1. It takes the CPU from P1 at once. P1 has 1 time unit
+    left and waits at the front of queue 2.</li>
+  <li>P2 and P3 share the CPU in slices of 2 time units.</li>
+  <li>P1 resumes at time 8, after queue 1 becomes empty.</li>
+  <li>The average turnaround time is 5.00. The average waiting time is 2.00. The CPU
+    utilization is 92.31 percent.</li>
+</ul>
+
+<p><b>[ Insert the second GUI screenshot here: screenshots/pr3-gui-mlq.png ]</b></p>
+
+<h2>5. Next Steps</h2>
+<ul>
+  <li>Test the simulator with more edge-case data sets and check the results by hand.</li>
+  <li>Each member examines the code of the other member, to prepare for the oral defense.</li>
+  <li>Improve the layout of the Gantt chart for a process set that is very long.</li>
+</ul>
+
+</body>
+</html>

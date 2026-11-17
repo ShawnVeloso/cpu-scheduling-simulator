@@ -1,0 +1,27 @@
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# Build / runtime
+node_modules
+dist
+build
+out
+__pycache__/
+*.pyc
+*.class
+*.o
+*.exe
+
+# Logs
+*.log
+
+# Instructor material (assignment PDF, templates, announcements). The repo is
+# public, so these files stay on the local disk only.
+docs/reference/
+
+# Local agent settings
+.claude/settings.local.json

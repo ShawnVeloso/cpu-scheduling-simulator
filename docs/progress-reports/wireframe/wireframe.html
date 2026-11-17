@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Simulator Wireframe</title>
+<style>
+  :root {
+    --ink: #1f2937; --muted: #6b7280; --line: #c7ccd4; --panel: #ffffff; --bg: #eef0f3;
+    --field: #f6f7f9; --accent: #374151; --note: #b45309;
+    --p1: #4f8fd6; --p2: #e07a5f; --p3: #5fae7f; --p4: #9b7ad1;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 14px/1.4 "Segoe UI", Arial, sans-serif; width: 1280px; }
+  header { display: flex; justify-content: space-between; align-items: center;
+           padding: 14px 24px; background: var(--accent); color: #fff; }
+  header h1 { margin: 0; font-size: 20px; font-weight: 600; }
+  header span { font-size: 13px; opacity: .85; }
+  main { display: grid; grid-template-columns: 470px 1fr; gap: 18px; padding: 18px 24px 24px; }
+  .card { background: var(--panel); border: 1.5px dashed var(--line); border-radius: 8px;
+          padding: 14px 16px; position: relative; }
+  .card + .card { margin-top: 18px; }
+  .card h2 { margin: 0 0 10px; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+  .badge { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
+           background: var(--note); color: #fff; font-size: 12px; font-weight: 700; }
+  .note { color: var(--note); font-size: 12px; font-style: italic; }
+  .row { display: flex; gap: 10px; align-items: end; flex-wrap: wrap; }
+  label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 3px; }
+  .field { background: var(--field); border: 1px solid var(--line); border-radius: 5px;
+           padding: 6px 9px; min-width: 70px; }
+  .field.select { min-width: 230px; display: flex; justify-content: space-between; }
+  .field.off { color: #a3a8b0; background: #fafafa; border-style: dashed; }
+  .btn { border: 1px solid var(--accent); border-radius: 5px; padding: 6px 12px; font-size: 13px;
+         background: #fff; color: var(--accent); }
+  .btn.primary { background: var(--accent); color: #fff; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { border: 1px solid var(--line); padding: 5px 7px; text-align: center; }
+  th { background: var(--field); font-weight: 600; }
+  td.in { background: #fcfcfd; }
+  th.dim, td.dim { color: #a3a8b0; }
+  tfoot td { font-weight: 700; background: var(--field); }
+  .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; }
+  .gantt { display: flex; height: 54px; border: 1.5px solid var(--ink); border-radius: 4px;
+           overflow: hidden; margin-top: 30px; }
+  .blk { display: grid; place-items: center; color: #fff; font-weight: 700;
+         border-right: 1.5px solid var(--ink); }
+  .blk:last-child { border-right: 0; }
+  .idle { color: var(--muted);
+          background: repeating-linear-gradient(45deg, #f3f4f6 0 6px, #dfe2e6 6px 12px); }
+  .axis { position: relative; height: 22px; font-size: 12px; color: var(--muted); }
+  .axis span { position: absolute; transform: translateX(-50%); top: 4px; }
+  .marks { position: relative; height: 0; }
+  .mark { position: absolute; top: -84px; transform: translateX(-50%); font-size: 11px;
+          color: #b91c1c; text-align: center; white-space: nowrap; }
+  .mark b { display: block; font-size: 14px; line-height: 1; }
+  .legend { display: flex; gap: 16px; margin-top: 10px; font-size: 12px; color: var(--muted); }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
+  .tile { border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; background: var(--field); }
+  .tile div { font-size: 12px; color: var(--muted); }
+  .tile strong { font-size: 22px; }
+  .formula { margin-top: 8px; font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<header>
+  <h1>CPU Scheduling Simulator</h1>
+  <span>Group 12 · Veloso &amp; Martinez · UI Wireframe (Progress Report 1)</span>
+</header>
+<main>
+  <section>
+    <div class="card">
+      <h2><span class="badge">1</span>Simulation Settings</h2>
+      <div class="row">
+        <div><label>Algorithm</label>
+          <div class="field select">Priority (Preemptive) <span>▾</span></div></div>
+        <div><label>Time Quantum (MLQ only)</label><div class="field off">2</div></div>
+      </div>
+      <p class="note" style="margin:8px 0 10px">Options: Priority (Non-preemptive) · Priority (Preemptive) ·
+        Multilevel Queue (Q1 = Round Robin, Q2 = FCFS)</p>
+      <div class="row">
+        <span class="btn primary">▶ Run Simulation</span>
+        <span class="btn">Reset</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="badge">2</span>Input Table: Processes</h2>
+      <table>
+        <thead><tr><th>PID</th><th>Arrival</th><th>Burst</th><th>Priority</th><th class="dim">Queue*</th><th></th></tr></thead>
+        <tbody>
+          <tr><td class="in">P1</td><td class="in">0</td><td class="in">4</td><td class="in">3</td><td class="in dim">1</td><td>✕</td></tr>
+          <tr><td class="in">P2</td><td class="in">1</td><td class="in">3</td><td class="in">1</td><td class="in dim">1</td><td>✕</td></tr>
+          <tr><td class="in">P3</td><td class="in">2</td><td class="in">2</td><td class="in">4</td><td class="in dim">2</td><td>✕</td></tr>
+          <tr><td class="in">P4</td><td class="in">10</td><td class="in">2</td><td class="in">2</td><td class="in dim">2</td><td>✕</td></tr>
+        </tbody>
+      </table>
+      <div class="row" style="margin-top:10px">
+        <span class="btn">+ Add Process</span>
+        <span class="btn">⇪ Upload File (.csv / .txt)</span>
+        <span class="btn">Load Sample</span>
+      </div>
+      <p class="note" style="margin:10px 0 0">A lower number has a higher priority. *Only MLQ uses the
+        Queue column (1 = foreground, 2 = background). The simulator shows a message for each invalid entry.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="card">
+      <h2><span class="badge">3</span>Gantt Chart: Execution Timeline</h2>
+      <div class="gantt">
+        <div class="blk" style="flex:1;background:var(--p1)">P1</div>
+        <div class="blk" style="flex:3;background:var(--p2)">P2</div>
+        <div class="blk" style="flex:3;background:var(--p1)">P1</div>
+        <div class="blk" style="flex:2;background:var(--p3)">P3</div>
+        <div class="blk idle" style="flex:1">IDLE</div>
+        <div class="blk" style="flex:2;background:var(--p4)">P4</div>
+      </div>
+      <div class="marks"><div class="mark" style="left:8.333%"><b>▼</b>P1 preempted by P2</div></div>
+      <div class="axis">
+        <span style="left:0%">0</span><span style="left:8.333%">1</span><span style="left:33.333%">4</span>
+        <span style="left:58.333%">7</span><span style="left:75%">9</span><span style="left:83.333%">10</span>
+        <span style="left:100%">12</span>
+      </div>
+      <div class="legend">
+        <span><i class="swatch" style="background:var(--p1)"></i>P1</span>
+        <span><i class="swatch" style="background:var(--p2)"></i>P2</span>
+        <span><i class="swatch" style="background:var(--p3)"></i>P3</span>
+        <span><i class="swatch" style="background:var(--p4)"></i>P4</span>
+        <span><i class="swatch idle"></i>CPU idle</span>
+        <span style="color:#b91c1c">▼ preemption point</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="badge">4</span>Performance Metrics</h2>
+      <div class="tiles">
+        <div class="tile"><div>Average Turnaround Time</div><strong>4.75</strong></div>
+        <div class="tile"><div>Average Waiting Time</div><strong>2.00</strong></div>
+        <div class="tile"><div>CPU Utilization</div><strong>91.67%</strong></div>
+      </div>
+      <table>
+        <thead><tr><th>PID</th><th>Arrival</th><th>Burst</th><th>Priority</th><th>Completion</th>
+          <th>Turnaround (TAT)</th><th>Waiting (WT)</th></tr></thead>
+        <tbody>
+          <tr><td>P1</td><td>0</td><td>4</td><td>3</td><td>7</td><td>7</td><td>3</td></tr>
+          <tr><td>P2</td><td>1</td><td>3</td><td>1</td><td>4</td><td>3</td><td>0</td></tr>
+          <tr><td>P3</td><td>2</td><td>2</td><td>4</td><td>9</td><td>7</td><td>5</td></tr>
+          <tr><td>P4</td><td>10</td><td>2</td><td>2</td><td>12</td><td>2</td><td>0</td></tr>
+        </tbody>
+        <tfoot><tr><td colspan="5">Average</td><td>4.75</td><td>2.00</td></tr></tfoot>
+      </table>
+      <p class="formula">TAT = Completion − Arrival · WT = TAT − Burst · CPU Utilization = busy time ÷ total time</p>
+    </div>
+  </section>
+</main>
+</body>
+</html>

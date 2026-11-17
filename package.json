@@ -1,0 +1,11 @@
+{
+  "name": "cpu-scheduling-simulator",
+  "version": "0.3.0",
+  "description": "CPU Scheduling Simulator - CS 3104N Operating Systems, Group 12 (Veloso & Martinez)",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "demo": "node tools/demo.js",
+    "test": "node tests/run-tests.js"
+  }
+}

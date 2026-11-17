@@ -1,0 +1,13 @@
+# CPU Scheduling Simulator - edge-case data for all three algorithms
+# The first arrival is at time 2, so the CPU is idle at the start.
+# P1 and P2 arrive together with an equal priority. The CPU is idle from 15 to 20.
+# P3 and P6 arrive with a higher priority (or in queue 1) while a process runs.
+# For the Multilevel Queue, use a time quantum of 2.
+# Columns: pid,arrival,burst,priority,queue
+pid,arrival,burst,priority,queue
+P1,2,6,3,2
+P2,2,2,3,1
+P3,4,3,1,1
+P4,5,2,3,2
+P5,20,4,2,2
+P6,21,2,1,1

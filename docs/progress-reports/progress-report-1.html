@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Progress Report No. 1</title>
+<style>
+  body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.5; color: #000;
+         max-width: 760px; margin: 32px auto; padding: 0 16px; }
+  h1 { font-size: 16pt; margin: 0 0 12px; }
+  h2 { font-size: 13pt; margin: 18px 0 6px; }
+  ul, ol { margin: 4px 0; }
+  .hint { font-family: system-ui, sans-serif; font-size: 10pt; background: #fff7d6;
+          border: 1px solid #e6c34a; padding: 8px 12px; border-radius: 6px; margin-bottom: 24px; }
+</style>
+</head>
+<body>
+<div class="hint">Select all text <b>below this box</b>, from the title to the end. Push
+Ctrl+C, then push Ctrl+V in the Google Doc. Put <code>wireframe/wireframe.png</code> at the
+marked position. Then select File → Download → PDF.</div>
+
+<h1>Progress Report No. 1</h1>
+
+<h2>1. Group Information</h2>
+<ul>
+  <li><b>Group Number:</b> 12</li>
+  <li><b>Members:</b> Shawn Veloso, Rev Martinez</li>
+</ul>
+
+<h2>2. Project Specifications</h2>
+<ul>
+  <li><b>Chosen Algorithms:</b>
+    <ol>
+      <li>Priority Scheduling (Non-preemptive)</li>
+      <li>Priority Scheduling (Preemptive)</li>
+      <li>Multilevel Queue (MLQ). The MLQ has two queues. Queue 1 (foreground) uses Round
+        Robin with a time quantum that the user sets. Queue 2 (background) uses FCFS. Queue 2
+        runs only when Queue 1 is empty. A new process in Queue 1 preempts a Queue 2 process
+        immediately.</li>
+    </ol>
+  </li>
+  <li><b>Technology Stack:</b> HTML, CSS, and JavaScript, with no frameworks. The simulator
+    runs in a web browser. HTML and CSS show the Gantt chart. The user can upload the process
+    data as a CSV or TXT file. We use Git for version control.</li>
+</ul>
+
+<h2>3. Task Delegation</h2>
+<ul>
+  <li><b>Shawn Veloso:</b> Shawn writes the scheduling logic for the three algorithms. This
+    includes the ready queue, preemption, the Round Robin time quantum, and the tie-breaking
+    rules. Shawn also writes the calculation of the completion time, turnaround time (TAT),
+    waiting time (WT), and the averages.</li>
+  <li><b>Rev Martinez:</b> Rev makes the user interface. This includes the input table, the
+    file upload, and the input validation with error messages. Rev also makes the color-coded
+    Gantt chart. The chart shows idle time and preemption points.</li>
+  <li><b>Both members:</b> We make test data with edge cases, such as non-zero arrival times,
+    idle gaps, and equal priorities. We calculate the results by hand and compare them with
+    the simulator output. Each member examines the code of the other member. This makes sure
+    that each member can explain all the algorithms during the defense.</li>
+</ul>
+
+<h2>4. Accomplishments &amp; Wireframe</h2>
+<ul>
+  <li><b>Current Progress:</b>
+    <ul>
+      <li>We formed the group.</li>
+      <li>We selected three algorithms. Two algorithms are preemptive and one algorithm is
+        non-preemptive. This meets the requirement for a group of two members.</li>
+      <li>We selected the technology stack.</li>
+      <li>We wrote the tie-breaking rules before we started to write code:
+        <ul>
+          <li>A lower number has a higher priority.</li>
+          <li>If two processes have the same priority, the process that arrived first runs
+            first. If they also arrived at the same time, the lower process ID runs
+            first.</li>
+          <li>A new process preempts the running process only if its priority is higher. An
+            equal priority does not cause preemption.</li>
+          <li>In Round Robin, a new process enters the queue before a process whose time
+            quantum expired at the same time.</li>
+        </ul>
+      </li>
+      <li>We examined the project requirements and the grading rubric.</li>
+      <li>We made a local Git repository and the project folder structure.</li>
+      <li>We made the UI wireframe (below).</li>
+    </ul>
+  </li>
+  <li><b>UI Wireframe:</b> The wireframe has four areas:
+    <ol>
+      <li>Simulation settings: the algorithm selection and the time quantum.</li>
+      <li>Input table: Process ID, Arrival Time, Burst Time, Priority, and Queue. The user can
+        add rows or upload a file.</li>
+      <li>Gantt chart: a color-coded timeline. It shows process switches, idle time, and
+        preemption points.</li>
+      <li>Performance metrics: the completion time, TAT, and WT for each process. This area
+        also shows the average TAT, the average WT, and the CPU utilization.</li>
+    </ol>
+    The sample data uses Preemptive Priority. We checked all the values by hand.
+  </li>
+</ul>
+
+<p><b>[ Insert wireframe image here ]</b></p>
+</body>
+</html>

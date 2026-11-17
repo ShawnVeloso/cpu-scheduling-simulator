@@ -1,0 +1,224 @@
+/* styles.css - the look of the simulator. No logic lives here. */
+
+:root {
+  --ink: #1f2937;
+  --muted: #6b7280;
+  --line: #c7ccd4;
+  --panel: #ffffff;
+  --bg: #eef0f3;
+  --field: #f6f7f9;
+  --accent: #374151;
+  --note: #b45309;
+  --danger: #b91c1c;
+  --ok: #15803d;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 14px/1.45 "Segoe UI", Arial, sans-serif;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  background: var(--accent);
+  color: #fff;
+}
+header h1 { margin: 0; font-size: 20px; font-weight: 600; }
+header span { font-size: 13px; opacity: .85; }
+
+main {
+  display: grid;
+  grid-template-columns: 470px minmax(0, 1fr);
+  gap: 18px;
+  padding: 18px 24px 32px;
+  align-items: start;
+}
+@media (max-width: 1100px) {
+  main { grid-template-columns: minmax(0, 1fr); }
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+.card + .card { margin-top: 18px; }
+.card h2 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  display: inline-grid;
+  place-items: center;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--note);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+.row.buttons { margin-top: 10px; align-items: center; }
+.control { display: flex; flex-direction: column; }
+label { font-size: 12px; color: var(--muted); margin-bottom: 3px; }
+
+select, input[type="number"], input[type="text"] {
+  font: inherit;
+  background: var(--field);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 6px 9px;
+  color: var(--ink);
+}
+select { min-width: 250px; }
+input[type="number"] { width: 110px; }
+input:disabled, select:disabled { color: #a3a8b0; background: #fafafa; }
+
+.btn {
+  font: inherit;
+  border: 1px solid var(--accent);
+  border-radius: 5px;
+  padding: 6px 12px;
+  background: #fff;
+  color: var(--accent);
+  cursor: pointer;
+}
+.btn:hover { background: #f0f1f3; }
+.btn.primary { background: var(--accent); color: #fff; }
+.btn.primary:hover { background: #111827; }
+.file-btn { display: inline-block; }
+
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { border: 1px solid var(--line); padding: 4px 6px; text-align: center; }
+th { background: var(--field); font-weight: 600; }
+tfoot td { font-weight: 700; background: var(--field); }
+
+/* Cells of the input table hold a plain text box. */
+td input {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: center;
+  font: inherit;
+  padding: 2px;
+}
+td input:focus { outline: 2px solid var(--accent); border-radius: 3px; }
+.col-off { color: #a3a8b0; background: #fafafa; }
+.del {
+  border: 0; background: none; color: var(--danger);
+  cursor: pointer; font-size: 14px; line-height: 1;
+}
+
+.note { color: var(--note); font-size: 12px; margin: 10px 0 0; }
+.placeholder { color: var(--muted); font-style: italic; margin: 6px 0; }
+
+.errors { border-color: var(--danger); }
+.errors h2 { color: var(--danger); }
+.errors ul { margin: 0; padding-left: 20px; font-size: 13px; color: var(--danger); }
+
+/* ---- Gantt chart ------------------------------------------------------- */
+
+/* A long timeline is wider than the card. This box then scrolls sideways. */
+.gantt-scroll { overflow-x: auto; padding-bottom: 6px; }
+/* The side padding keeps the first and the last axis label inside the box. */
+.gantt-inner { padding: 0 14px; }
+
+.marks { position: relative; height: 18px; }
+.mark {
+  position: absolute;
+  bottom: 0;
+  transform: translateX(-50%);
+  font-size: 13px;
+  line-height: 1;
+  color: var(--danger);
+  cursor: default;
+}
+.mark.quantum { color: var(--note); }
+
+.gantt {
+  display: flex;
+  height: 54px;
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.blk {
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  border-right: 1.5px solid var(--ink);
+  min-width: 0;
+  overflow: hidden;
+}
+.blk:last-child { border-right: 0; }
+.blk.idle {
+  color: var(--muted);
+  background: repeating-linear-gradient(45deg, #f3f4f6 0 6px, #dfe2e6 6px 12px);
+}
+.blk.cut { border-right: 3px solid var(--danger); }
+
+.axis { position: relative; height: 20px; font-size: 12px; color: var(--muted); }
+.axis span { position: absolute; transform: translateX(-50%); top: 3px; }
+
+.legend {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  margin-top: 12px; font-size: 12px; color: var(--muted);
+}
+.swatch {
+  display: inline-block; width: 10px; height: 10px;
+  border-radius: 2px; margin-right: 5px;
+}
+.swatch.idle {
+  background: repeating-linear-gradient(45deg, #f3f4f6 0 3px, #dfe2e6 3px 6px);
+  border: 1px solid var(--line);
+}
+
+.key-preempt { color: var(--danger); }
+.key-quantum { color: var(--note); }
+
+.log-title { margin: 14px 0 4px; font-size: 13px; }
+.event-log {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 12.5px;
+  max-height: 150px;   /* a long run has many events: the list scrolls */
+  overflow-y: auto;
+}
+.event-log li.preempt { color: var(--danger); }
+.event-log li.quantum { color: var(--note); }
+
+/* ---- Metrics ----------------------------------------------------------- */
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.tile {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: var(--field);
+}
+.tile div { font-size: 12px; color: var(--muted); }
+.tile strong { font-size: 22px; }
+.formula { margin-top: 8px; font-size: 12px; color: var(--muted); }
+.run-info { margin: 0 0 10px; font-size: 13px; color: var(--ok); }

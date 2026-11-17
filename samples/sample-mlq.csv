@@ -1,0 +1,8 @@
+# CPU Scheduling Simulator - sample data for the Multilevel Queue
+# Queue 1 is foreground (Round Robin). Queue 2 is background (FCFS).
+# Columns: pid,arrival,burst,priority,queue
+pid,arrival,burst,priority,queue
+P1,0,4,1,2
+P2,3,3,1,1
+P3,4,2,1,1
+P4,9,3,1,2

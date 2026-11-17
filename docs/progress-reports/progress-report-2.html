@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Progress Report No. 2</title>
+<style>
+  body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.5; color: #000;
+         max-width: 760px; margin: 32px auto; padding: 0 16px; }
+  h1 { font-size: 16pt; margin: 0 0 12px; }
+  h2 { font-size: 13pt; margin: 18px 0 6px; }
+  ul, ol { margin: 4px 0; }
+  code { font-family: Consolas, "Courier New", monospace; font-size: 10.5pt; }
+  table { border-collapse: collapse; margin: 8px 0; font-size: 10.5pt; }
+  th, td { border: 1px solid #999; padding: 4px 8px; text-align: left; }
+  th { background: #f0f0f0; }
+  .hint { font-family: system-ui, sans-serif; font-size: 10pt; background: #fff7d6;
+          border: 1px solid #e6c34a; padding: 8px 12px; border-radius: 6px; margin-bottom: 24px; }
+</style>
+</head>
+<body>
+<div class="hint">Select all text <b>below this box</b>, from the title to the end. Push
+Ctrl+C, then push Ctrl+V in the Google Doc. Put
+<code>screenshots/pr2-console-output.png</code> at the marked position. Then select
+File &rarr; Download &rarr; PDF.</div>
+
+<h1>Progress Report No. 2</h1>
+
+<h2>1. Group Information</h2>
+<ul>
+  <li><b>Group Number:</b> 12</li>
+  <li><b>Members:</b> Shawn Veloso, Rev Martinez</li>
+</ul>
+
+<h2>2. Data Structures &amp; Setup</h2>
+
+<p><b>The Process.</b> We use JavaScript. A process is a plain object. The scheduler makes a
+copy of each input object before it starts. The copy holds five input fields and two work
+fields:</p>
+
+<table>
+  <tr><th>Field</th><th>Type</th><th>Purpose</th></tr>
+  <tr><td><code>pid</code></td><td>text</td><td>The process identifier, for example P1.</td></tr>
+  <tr><td><code>arrival</code></td><td>whole number</td><td>The time unit when the process enters the system.</td></tr>
+  <tr><td><code>burst</code></td><td>whole number</td><td>The total CPU time that the process needs.</td></tr>
+  <tr><td><code>priority</code></td><td>whole number</td><td>A lower number is a higher priority.</td></tr>
+  <tr><td><code>queue</code></td><td>1 or 2</td><td>The queue level. The Multilevel Queue uses this field only.</td></tr>
+  <tr><td><code>remaining</code></td><td>whole number</td><td>The CPU time that is still not done. It starts equal to <code>burst</code>.</td></tr>
+  <tr><td><code>completion</code></td><td>whole number</td><td>The time unit when the process ends. The metrics use this value.</td></tr>
+</table>
+
+<p>The scheduler changes the copies only. The input list of the caller stays the same. A test
+checks this rule.</p>
+
+<p><b>The Ready Queue.</b> The two algorithms use two different structures. Each structure
+matches the way that its algorithm selects a process.</p>
+<ul>
+  <li><b>Priority Scheduling:</b> one array holds all the processes. At each time unit the
+    scheduler examines the array and selects the ready process with the best key. A process
+    is ready when <code>arrival</code> is not more than the current time, and
+    <code>remaining</code> is more than 0. The selection function compares three keys in
+    order: the priority, then the arrival time, then the PID. We selected a linear scan
+    instead of a heap. The scan is short, and each member can explain every line of it.</li>
+  <li><b>Multilevel Queue:</b> two arrays operate as FIFO queues. The code adds a process to
+    the back with <code>push()</code> and removes a process from the front with
+    <code>shift()</code>. Queue 1 is the foreground queue and uses Round Robin. Queue 2 is the
+    background queue and uses FCFS.</li>
+</ul>
+
+<p><b>The Timeline.</b> The algorithms run the CPU one time unit at a time. A
+<code>TimelineBuilder</code> object records the owner of each time unit. It joins equal
+neighbours into one Gantt block. Every time unit from 0 to the last completion belongs to
+exactly one block. The block holds a process ID or the text IDLE. A test checks that the
+blocks have no gap and no overlap.</p>
+
+<p><b>Structure of the code.</b> The scheduling core has no access to the page and reads no
+file. The browser interface and the console test call the same function,
+<code>runSimulation()</code>.</p>
+
+<table>
+  <tr><th>File</th><th>Content</th></tr>
+  <tr><td><code>src/core/validate.js</code></td><td>The input checks.</td></tr>
+  <tr><td><code>src/core/timeline.js</code></td><td>The Gantt blocks and the metrics.</td></tr>
+  <tr><td><code>src/core/priority.js</code></td><td>Priority Scheduling, both versions.</td></tr>
+  <tr><td><code>src/core/mlq.js</code></td><td>The Multilevel Queue.</td></tr>
+  <tr><td><code>src/core/index.js</code></td><td><code>runSimulation()</code>, the one entry point.</td></tr>
+  <tr><td><code>tools/demo.js</code></td><td>The console test of the backend.</td></tr>
+  <tr><td><code>tests/run-tests.js</code></td><td>The automatic tests.</td></tr>
+</table>
+
+<h2>3. Backend Algorithms Completed</h2>
+
+<p><b>Priority Scheduling (Non-preemptive) is complete.</b> This is our non-preemptive
+algorithm. The logic has three steps:</p>
+<ol>
+  <li>When the CPU is free, the scheduler selects the ready process with the best key.</li>
+  <li>The selected process keeps the CPU until <code>remaining</code> becomes 0. A new
+    arrival with a higher priority does not interrupt it.</li>
+  <li>When no process is ready, the CPU idles for one time unit. The timeline shows an IDLE
+    block for this gap.</li>
+</ol>
+
+<p><b>The FCFS logic of queue 2 is also complete.</b> Queue 2 of the Multilevel Queue is
+non-preemptive inside the queue. It takes the process at the front and runs it.</p>
+
+<p><b>The tie-breaking rules.</b> We agreed on these rules before we wrote the code. All the
+algorithms apply them in the same way:</p>
+<ol>
+  <li>A lower priority number is a higher priority. The number 1 is better than the number 5.</li>
+  <li>If two processes have an equal priority, the earlier arrival runs first.</li>
+  <li>If the arrival times are also equal, the lower PID runs first.</li>
+  <li>The context-switch time is 0.</li>
+</ol>
+
+<p><b>Work in progress.</b> The preemptive version shares one function with the
+non-preemptive version. A flag selects the behaviour. The preemptive version makes a new
+dispatch decision at every time unit. We report this part in Progress Report No. 3.</p>
+
+<h2>4. Proof of Progress</h2>
+
+<p><b>Console/Backend Output.</b> The command <code>node tools/demo.js</code> runs the
+backend with a hard-coded set of five processes. The set holds three edge cases:</p>
+<ul>
+  <li><b>A non-zero arrival time:</b> P2 to P5 arrive after time 0.</li>
+  <li><b>An equal priority:</b> P3 and P4 both have the priority 3. P3 arrived first, so P3
+    runs first.</li>
+  <li><b>An idle CPU:</b> no process is ready between time 14 and time 16.</li>
+</ul>
+
+<p>The output shows the input table, the Gantt timeline, the completion time of each process,
+the turnaround time, the waiting time, and the averages. The formulas are
+<b>TAT = Completion &minus; Arrival</b> and <b>WT = TAT &minus; Burst</b>.</p>
+
+<p>We calculated the same set by hand before the run. The script prints both results beside
+each other. All seven values match. The last part of the output shows that the core rejects
+invalid input with a clear message and does not stop with an error.</p>
+
+<p><b>[ Insert the console screenshot here: screenshots/pr2-console-output.png ]</b></p>
+
+<p><b>Automatic tests.</b> The command <code>node tests/run-tests.js</code> runs 49 tests.
+All 49 tests pass. The tests cover simultaneous arrivals, a non-zero first arrival, idle
+gaps, equal priorities, a single process, and five invalid-input cases.</p>
+
+<h2>5. Next Steps</h2>
+<ul>
+  <li>Complete the preemptive Priority Scheduling and the Multilevel Queue preemption.</li>
+  <li>Connect the backend to the browser interface and draw the Gantt chart.</li>
+  <li>Add the file upload for CSV and TXT process data.</li>
+</ul>
+
+</body>
+</html>
